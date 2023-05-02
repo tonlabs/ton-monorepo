@@ -379,3 +379,6 @@ def? config-valid? {
 
 forget maybe-anycast
 forget parse-address-with-anycast
+
+{ dup 0= not { "" +cr "shell error with exit code "
+  $+ swap (.) $+ +":" +cr swap $+ abort } if drop } : SHELL?

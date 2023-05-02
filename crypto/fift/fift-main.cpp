@@ -45,6 +45,7 @@
 #include "Dictionary.h"
 #include "SourceLookup.h"
 #include "words.h"
+#include "extwords.h"
 
 #include "vm/db/TonDb.h"
 
@@ -67,6 +68,7 @@ void usage(const char* progname) {
                "\t-L<library-fif-file>\tPre-loads a library source file\n"
                "\t-d<ton-db-path>\tUse a ton database\n"
                "\t-s\tScript mode: use first argument as a fift source file and import remaining arguments as $n)\n"
+               "\t-S\tAllow \"shell\" wrod usage\n"
                "\t-v<verbosity-level>\tSet verbosity level\n"
                "\t-V<version>\tShow fift build information\n";
   std::exit(2);
@@ -87,6 +89,8 @@ int main(int argc, char* const argv[]) {
   bool interactive = false;
   bool fift_preload = true, no_env = false;
   bool script_mode = false;
+  bool allow_shell = false;
+
   std::vector<std::string> library_source_files, source_list;
   std::vector<std::string> source_include_path;
   std::string ton_db_path;
@@ -95,7 +99,8 @@ int main(int argc, char* const argv[]) {
 
   int i;
   int new_verbosity_level = VERBOSITY_NAME(INFO);
-  while (!script_mode && (i = getopt(argc, argv, "hinI:L:d:sv:V")) != -1) {
+
+  while (!script_mode && (i = getopt(argc, argv, "hinI:L:d:sSv:V")) != -1) {
     switch (i) {
       case 'i':
         interactive = true;
@@ -115,6 +120,9 @@ int main(int argc, char* const argv[]) {
         break;
       case 's':
         script_mode = true;
+        break;
+      case 'S':
+        allow_shell = true;
         break;
       case 'v':
         new_verbosity_level = VERBOSITY_NAME(FATAL) + td::to_integer<int>(td::Slice(optarg));
@@ -166,6 +174,7 @@ int main(int argc, char* const argv[]) {
   fift::init_words_common(config.dictionary);
   fift::init_words_vm(config.dictionary, true);  // enable vm debug
   fift::init_words_ton(config.dictionary);
+  fift::init_words_ext(config.dictionary, allow_shell);
 
   if (script_mode) {
     fift::import_cmdline_args(config.dictionary, source_list.empty() ? "" : source_list[0], argc - optind,

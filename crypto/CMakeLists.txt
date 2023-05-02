@@ -148,6 +148,7 @@ set(FIFT_SOURCE
   fift/SourceLookup.cpp
   fift/utils.cpp
   fift/words.cpp
+  fift/extwords.cpp
 
   fift/Dictionary.h
   fift/Fift.h
@@ -157,6 +158,7 @@ set(FIFT_SOURCE
   fift/SourceLookup.h
   fift/utils.h
   fift/words.h
+  fift/extwords.h
 )
 
 set(PARSER_SOURCE
