@@ -12,19 +12,30 @@ library TonUtil // TON Blockchain Fift Library
 
 { (number) 1- abort"integer expected" } : parse-int
 
+{
+    dup                   "true"  $= { -1 ``d } if
+    dup ``d eq? not { dup "t"     $= { -1 ``d } if } if
+    dup ``d eq? not { dup "1"     $= { -1 ``d } if } if
+    dup ``d eq? not { dup "-1"    $= { -1 ``d } if } if
+    dup ``d eq? not { dup "false" $= { 0  ``d } if } if
+    dup ``d eq? not { dup "f"     $= { 0  ``d } if } if
+    dup ``d eq? not { dup "0"     $= { 0  ``d } if } if
+    dup ``d eq? not { "invalid bool value" abort } { drop nip } cond
+} : parse-bool
+
 { over null? ' swap if drop } : replace-if-null
 
 // Private key load/generate
 // ( fname -- pubkey privkey )
-{ dup ."Loading private key from file " type cr 
-  file>B dup Blen 32 <> abort"Private key must be exactly 32 bytes long"
+{ dup ."loading private key from file " type cr 
+  file>B dup Blen 32 <> abort"private key must be exactly 32 bytes long"
   dup priv>pub swap 
 } : load-keypair
 // ( fname -- pubkey privkey )
 { dup file-exists?
   { load-keypair }
   { dup newkeypair swap rot over swap B>file
-    rot ."Saved new private key to file " type cr 
+    rot ."saved new private key to file " type cr 
   } cond
 } : load-generate-keypair
 
