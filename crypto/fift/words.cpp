@@ -99,9 +99,16 @@ void interpret_dotbinary(IntCtx& ctx, bool space_after) {
   *ctx.output_stream << binary_string(ctx.stack.pop_int()) << (space_after ? " " : "");
 }
 
+void interpret_dot_cellslice_rec_l(IntCtx& ctx) {
+    auto lm = ctx.stack.pop_smallint_range(4096);
+    auto cs = ctx.stack.pop_cellslice();
+
+    cs->print_rec(lm, *ctx.output_stream);
+}
+
 void interpret_dot_cellslice_rec(IntCtx& ctx) {
-  auto cs = ctx.stack.pop_cellslice();
-  cs->print_rec(*ctx.output_stream);
+    auto cs = ctx.stack.pop_cellslice();
+    cs->print_rec(*ctx.output_stream);
 }
 
 void interpret_dotstack(IntCtx& ctx) {
@@ -3110,6 +3117,7 @@ void init_words_common(Dictionary& d) {
   d.def_ctx_word("b. ", std::bind(interpret_dotbinary, _1, true));
   d.def_ctx_word("b._ ", std::bind(interpret_dotbinary, _1, false));
   d.def_ctx_word("csr. ", interpret_dot_cellslice_rec);
+  d.def_ctx_word("lcsr. ", interpret_dot_cellslice_rec_l);
   d.def_ctx_word(".s ", interpret_dotstack);
   d.def_ctx_word(".sl ", interpret_dotstack_list);
   d.def_ctx_word(".sL ", interpret_dotstack_list_dump);  // TMP
